@@ -1,10 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/shared/prisma/prisma.service';
+import { UserRepository } from './users.repositoties';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
-  findAllUsers(){
-    return this.prisma.user.findMany();
+  constructor(private readonly userRepo: UserRepository) {}
+  findAllUsers() : unknown{
+    return this.userRepo.getAllUsers();
+  }
+
+  getUserById(id : number){
+    return this.userRepo.getUserById(id);
   }
 }
