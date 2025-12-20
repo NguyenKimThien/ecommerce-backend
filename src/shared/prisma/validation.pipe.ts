@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
@@ -6,11 +8,12 @@ import {
   PipeTransform,
   Injectable,
   ArgumentMetadata,
-  BadRequestException,
-
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
-import { validate } from 'class-validator';
+import { validate, ValidationError } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
+import { ApiResponse } from 'src/common/base/api-response';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform<unknown> {
@@ -20,11 +23,10 @@ export class ValidationPipe implements PipeTransform<unknown> {
     }
     const object = plainToInstance(metatype, value);
     const errors = await validate(object);
-
-    console.log(errors);
+    const formattedErrors = this.formatErrors(errors);
 
     if (errors.length > 0) {
-      throw new BadRequestException('Validation failed');
+      throw new HttpException(ApiResponse.error(value, formattedErrors), HttpStatus.BAD_REQUEST);
     }
     return value;
   }
@@ -33,5 +35,14 @@ export class ValidationPipe implements PipeTransform<unknown> {
     const types: Function[] = [String, Boolean, Number, Array, Object];
     return !types.includes(metatype);
   }
-
+  
+  private formatErrors(errors: ValidationError[]) : object {
+    const result = {};
+    errors.forEach(element => {
+       if(element.constraints) {
+         result[element.property] = Object.values(element.constraints);
+       }
+   });
+   return result;
+  }
 }

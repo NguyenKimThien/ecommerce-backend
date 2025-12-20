@@ -23,7 +23,7 @@ export class ApiResponse {
 
     static error<T>(
         data : T,
-        message : string,
+        message : object,
         httpStatus : HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
     ) : Record<string, unknown> {
         return {
