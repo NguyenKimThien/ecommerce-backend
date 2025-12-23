@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
-import { ApiResponseKey } from "src/enum/api-response-key.enum";
+import { ApiResponseKey } from "../../enum/api-response-key.enum";
 @Injectable()
 export class ApiResponse {
 
